@@ -30,6 +30,11 @@
         <service
             android:name=".services.BackgroundTrackingService"
             android:enabled="true" />
+
+        <provider
+            android:name=".data.generated.LocationContentProvider"
+            android:authorities="iamdilipkumar.com.locationtracking.data.provider"
+            android:exported="false" />
     </application>
 
 </manifest>
