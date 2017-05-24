@@ -20,9 +20,9 @@ Almost there, as your final step : Just open the google_maps_api.xml and add you
 
 ![Location Screenshot 1](https://github.com/dilipkumar4813/LocationTracking/blob/master/snapshots/device-2017-05-24-230900.png)
 
-![Location Screenshot 2](https://github.com/dilipkumar4813/LocationTracking/commit/a06f5f4629ae950e3bbcf722922b11d048aa404a)
+![Location Screenshot 2](https://github.com/dilipkumar4813/LocationTracking/blob/master/snapshots/device-2017-05-24-230838.png)
 
-![Location Screenshot 3](https://github.com/dilipkumar4813/LocationTracking/commit/fb8f3ed0a6bd5d5127de946bd77340981dc74424)
+![Location Screenshot 3](https://github.com/dilipkumar4813/LocationTracking/blob/master/snapshots/device-2017-05-24-215956.png)
 
 ![Location Screenshot 4](https://github.com/dilipkumar4813/LocationTracking/blob/master/snapshots/device-2017-05-24-220101.png)
 
