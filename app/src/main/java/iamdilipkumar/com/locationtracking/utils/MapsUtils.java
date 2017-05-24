@@ -3,8 +3,11 @@ package iamdilipkumar.com.locationtracking.utils;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.location.LocationManager;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,6 +28,22 @@ import iamdilipkumar.com.locationtracking.ui.dialog.CustomDialog;
  */
 
 public class MapsUtils {
+
+    /**
+     * Method to check if location services is enabled
+     *
+     * @param activity - used to access location service and start activity
+     */
+    public static void checkGpsLocation(Activity activity) {
+        LocationManager mLocationManager = (LocationManager) activity.getApplicationContext()
+                .getSystemService(Context.LOCATION_SERVICE);
+        boolean isGPSEnabled = mLocationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!isGPSEnabled) {
+            CustomDialog.buildGpsPermissionDialog(activity);
+        }
+    }
 
     /**
      * Method to fetch all the locations between the start and stop
@@ -72,7 +91,7 @@ public class MapsUtils {
             map.moveCamera(CameraUpdateFactory.newLatLng(zoomLocation));
             map.animateCamera(CameraUpdateFactory.zoomTo(15));
         } else {
-            CustomDialog.buildOneButtonDialog(activity, activity.getString(R.string.no_data),
+            CustomDialog.buildSingleButtonDialog(activity, activity.getString(R.string.no_data),
                     activity.getString(R.string.no_data_message));
         }
 

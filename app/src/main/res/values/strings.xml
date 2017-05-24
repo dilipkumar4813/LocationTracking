@@ -5,7 +5,9 @@
     <string name="start_shift">Start shift</string>
     <string name="stop_shift">Stop shift</string>
 
-    <string name="dialog_ok">OK</string>
     <string name="no_data">No data</string>
     <string name="no_data_message">Woow, you just started and stopped immediately.</string>
+
+    <string name="gps_error_title">No GPS</string>
+    <string name="gps_error_description">You are required to enable Location Services to utilize this application</string>
 </resources>

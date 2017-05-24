@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 
 import iamdilipkumar.com.locationtracking.data.LocationColumns;
 import iamdilipkumar.com.locationtracking.data.LocationContentProvider;
+
+import static android.location.Criteria.ACCURACY_FINE;
 
 /**
  * Created on 24/05/17.
@@ -26,7 +29,7 @@ public class BackgroundTrackingService extends Service {
     private static final String TAG = BackgroundTrackingService.class.getSimpleName();
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 10000; // Change this to 10000
-    private static final float LOCATION_DISTANCE = 0f; // Change this to 0 if its not working 10f
+    private static final float LOCATION_DISTANCE = 10f; // Change this to 0 if its not working 10f
     private Context mContext;
 
     /**
@@ -42,6 +45,7 @@ public class BackgroundTrackingService extends Service {
 
         @Override
         public void onLocationChanged(Location location) {
+
             Log.d(TAG, "Latitude" + location.getLatitude() + " Longitude:"
                     + location.getLongitude());
 
@@ -99,9 +103,19 @@ public class BackgroundTrackingService extends Service {
         initializeLocationManager();
 
         try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[1]);
+            if (mLocationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                mLocationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                        mLocationListeners[1]);
+                mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }else{
+                mLocationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                        mLocationListeners[0]);
+                mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+
         } catch (java.lang.SecurityException ex) {
             Log.d(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {

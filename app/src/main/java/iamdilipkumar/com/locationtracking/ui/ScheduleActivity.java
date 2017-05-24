@@ -9,9 +9,12 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.Button;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +59,13 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
         setContentView(R.layout.activity_schedule);
 
         mIntent = new Intent(this, BackgroundTrackingService.class);
+
+        MapsUtils.checkGpsLocation(this);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         ButterKnife.bind(this);
 
         if (MapsUtils.isServiceRunning(this, BackgroundTrackingService.class)) {
@@ -63,9 +73,7 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
             startStopShift.setText(getString(R.string.stop_shift));
         }
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
     }
 
 
@@ -84,9 +92,10 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
         checkPermissionAndEnableCurrentLocation();
 
         // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+        LatLng bangalore = new LatLng(12.9538477, 77.3507394);
+        mMap.addMarker(new MarkerOptions().position(bangalore).title("Bangalore"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(bangalore));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
     private void checkPermissionAndEnableCurrentLocation() {
