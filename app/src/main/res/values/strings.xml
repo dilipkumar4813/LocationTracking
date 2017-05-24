@@ -8,6 +8,9 @@
     <string name="no_data">No data</string>
     <string name="no_data_message">Woow, you just started and stopped immediately.</string>
 
+    <string name="shift_complete_title">Shift completed</string>
+    <string name="shift_complete_description">Hurray, you just completed your shift treat yourself with a beer :)</string>
+
     <string name="gps_error_title">No GPS</string>
     <string name="gps_error_description">You are required to enable Location Services to utilize this application</string>
 </resources>

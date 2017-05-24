@@ -1,4 +1,4 @@
-package iamdilipkumar.com.locationtracking.ui;
+package iamdilipkumar.com.locationtracking.ui.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -39,6 +39,7 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
             if (access && MapsUtils.checkGpsLocation(this)) {
                 shiftStatus = true;
                 startStopShift.setText(getString(R.string.stop_shift));
+                MapsUtils.deletePreviousLocations(this);
                 startService(mIntent);
             } else {
                 checkPermissionAndEnableCurrentLocation();
@@ -59,8 +60,6 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
         setContentView(R.layout.activity_schedule);
 
         mIntent = new Intent(this, BackgroundTrackingService.class);
-
-        MapsUtils.checkGpsLocation(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);

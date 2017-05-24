@@ -1,21 +1,31 @@
 package iamdilipkumar.com.locationtracking.services;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
+import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationListener;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 import iamdilipkumar.com.locationtracking.data.LocationColumns;
 import iamdilipkumar.com.locationtracking.data.LocationContentProvider;
-
-import static android.location.Criteria.ACCURACY_FINE;
 
 /**
  * Created on 24/05/17.
@@ -24,28 +34,63 @@ import static android.location.Criteria.ACCURACY_FINE;
  * @version 1.0
  */
 
-public class BackgroundTrackingService extends Service {
+public class BackgroundTrackingService extends Service implements
+        LocationListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = BackgroundTrackingService.class.getSimpleName();
-    private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 10000; // Change this to 10000
-    private static final float LOCATION_DISTANCE = 10f; // Change this to 0 if its not working 10f
+    private static final long INTERVAL = 10000;
+    private static final long FASTEST_INTERVAL = 1000 * 5;
+
+    private LocationRequest mLocationRequest;
+    private GoogleApiClient mGoogleApiClient;
     private Context mContext;
 
-    /**
-     * Class to implement location listener which will be used for storing the users
-     * Locations
-     */
-    private class LocationListener implements android.location.LocationListener {
-        Location mLastLocation;
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
-        LocationListener(String provider) {
-            mLastLocation = new Location(provider);
-        }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        mGoogleApiClient.connect();
+        return START_STICKY;
+    }
 
-        @Override
-        public void onLocationChanged(Location location) {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        mContext = this;
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (location != null) {
             Log.d(TAG, "Latitude" + location.getLatitude() + " Longitude:"
                     + location.getLongitude());
 
@@ -53,106 +98,37 @@ public class BackgroundTrackingService extends Service {
             cv.put(LocationColumns.UID, 123);
             cv.put(LocationColumns.LATITUDE, String.valueOf(location.getLatitude()));
             cv.put(LocationColumns.LONGITUDE, String.valueOf(location.getLongitude()));
-            cv.put(LocationColumns.TIME_STAMP, "timestamp");
+            cv.put(LocationColumns.TIME_STAMP
+                    , String.valueOf(DateFormat.getTimeInstance().format(new Date())));
 
             mContext.getContentResolver()
                     .insert(LocationContentProvider.ContentLocations.CONTENT_URI, cv);
-
-            Toast.makeText(mContext, "Location"
-                    + String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT).show();
-
-            mLastLocation.set(location);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-    }
-
-    LocationListener[] mLocationListeners = new LocationListener[]{
-            new LocationListener(LocationManager.GPS_PROVIDER),
-            new LocationListener(LocationManager.NETWORK_PROVIDER)
-    };
-
-    @Override
-    public IBinder onBind(Intent arg0) {
-        return null;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
-    }
-
-    @Override
-    public void onCreate() {
-        mContext = this;
-
-        initializeLocationManager();
-
-        try {
-            if (mLocationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                mLocationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                        mLocationListeners[1]);
-                mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            }else{
-                mLocationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                        mLocationListeners[0]);
-                mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            }
-
-        } catch (java.lang.SecurityException ex) {
-            Log.d(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[0]);
-        } catch (java.lang.SecurityException ex) {
-            Log.d(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mLocationManager != null) {
-            for (int i = 0; i < mLocationListeners.length; i++) {
-                try {
-                    mLocationManager.removeUpdates(mLocationListeners[i]);
-                } catch (Exception ex) {
-                    Log.d(TAG, "fail to remove location listners, ignore", ex);
-                }
-            }
-        }
+    public void onConnected(@Nullable Bundle bundle) {
+        startLocationUpdates();
     }
 
-    /**
-     * Method to initialize the location manager
-     */
-    private void initializeLocationManager() {
-        if (mLocationManager == null) {
-            mLocationManager = (LocationManager) getApplicationContext()
-                    .getSystemService(Context.LOCATION_SERVICE);
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED && ActivityCompat
+                .checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            return;
         }
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

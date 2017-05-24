@@ -18,7 +18,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".ui.ScheduleActivity"
+            android:name=".ui.activities.ScheduleActivity"
             android:label="@string/title_activity_schedule">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

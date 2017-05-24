@@ -3,11 +3,9 @@ package iamdilipkumar.com.locationtracking.utils;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.LocationManager;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -75,7 +73,7 @@ public class MapsUtils {
                     Double lat = Double.parseDouble(
                             cursor.getString(cursor.getColumnIndex(LocationColumns.LATITUDE)));
                     Double lng = Double.parseDouble(
-                            cursor.getString(cursor.getColumnIndex(LocationColumns.LATITUDE)));
+                            cursor.getString(cursor.getColumnIndex(LocationColumns.LONGITUDE)));
 
                     if (zoomLocation == null) {
                         zoomLocation = new LatLng(lat, lng);
@@ -94,6 +92,10 @@ public class MapsUtils {
         if (zoomLocation != null) {
             map.moveCamera(CameraUpdateFactory.newLatLng(zoomLocation));
             map.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+            CustomDialog.buildSingleButtonDialog(activity
+                    , activity.getString(R.string.shift_complete_title)
+                    , activity.getString(R.string.shift_complete_description));
         } else {
             CustomDialog.buildSingleButtonDialog(activity, activity.getString(R.string.no_data),
                     activity.getString(R.string.no_data_message));
@@ -117,5 +119,11 @@ public class MapsUtils {
             }
         }
         return false;
+    }
+
+    public static void deletePreviousLocations(Activity activity) {
+        activity.getContentResolver().delete(LocationContentProvider.ContentLocations.CONTENT_URI
+                , null
+                , null);
     }
 }
