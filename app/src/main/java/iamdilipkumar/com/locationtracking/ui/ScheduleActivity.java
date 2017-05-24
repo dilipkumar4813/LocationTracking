@@ -36,7 +36,7 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
             stopService(mIntent);
             mMap.addPolyline(MapsUtils.drawPoyline(this, mMap));
         } else {
-            if (access) {
+            if (access && MapsUtils.checkGpsLocation(this)) {
                 shiftStatus = true;
                 startStopShift.setText(getString(R.string.stop_shift));
                 startService(mIntent);
@@ -72,10 +72,13 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
             shiftStatus = true;
             startStopShift.setText(getString(R.string.stop_shift));
         }
-
-
     }
 
+    @Override
+    protected void onResume() {
+        MapsUtils.checkGpsLocation(this);
+        super.onResume();
+    }
 
     /**
      * Manipulates the map once available.
@@ -98,6 +101,9 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
+    /**
+     * Check if permissions are enabled
+     */
     private void checkPermissionAndEnableCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             access = false;

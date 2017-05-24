@@ -34,7 +34,7 @@ public class MapsUtils {
      *
      * @param activity - used to access location service and start activity
      */
-    public static void checkGpsLocation(Activity activity) {
+    public static boolean checkGpsLocation(Activity activity) {
         LocationManager mLocationManager = (LocationManager) activity.getApplicationContext()
                 .getSystemService(Context.LOCATION_SERVICE);
         boolean isGPSEnabled = mLocationManager
@@ -42,7 +42,10 @@ public class MapsUtils {
 
         if (!isGPSEnabled) {
             CustomDialog.buildGpsPermissionDialog(activity);
+            return false;
         }
+
+        return true;
     }
 
     /**
@@ -53,6 +56,7 @@ public class MapsUtils {
      * @return - returns the polyline options
      */
     public static PolylineOptions drawPoyline(Activity activity, GoogleMap map) {
+        map.clear();
 
         LatLng zoomLocation = null;
         PolylineOptions polylineOptions = new PolylineOptions();
