@@ -17,13 +17,13 @@ import net.simonvt.schematic.annotation.TableEndpoint;
 @ContentProvider(authority = LocationContentProvider.AUTHORITY, database = LocationDatabase.class)
 public class LocationContentProvider {
 
-    public static final String AUTHORITY = "iamdilipkumar.com.locationtracking.data.provider";
+    static final String AUTHORITY = "iamdilipkumar.com.locationtracking.data.provider";
 
     @TableEndpoint(table = LocationDatabase.LOCATIONS)
-    public static class MainContacts {
+    public static class ContentLocations {
 
-        @ContentUri(path = "locations", type = "vnd.android.cursor.dir/contacts", defaultSort = LocationColumns._ID + " DESC")
-        public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/contacts");
+        @ContentUri(path = "locations", type = "vnd.android.cursor.dir/locations", defaultSort = LocationColumns._ID + " DESC")
+        public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/locations");
 
         @InexactContentUri(
                 path = "locations/#",
