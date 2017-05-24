@@ -3,6 +3,7 @@ package iamdilipkumar.com.locationtracking.ui;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -30,18 +31,24 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
             shiftStatus = false;
             startStopShift.setText(getString(R.string.start_shift));
             stopService(mIntent);
-            mMap.addPolyline(MapsUtils.drawPoyline(this,mMap));
+            mMap.addPolyline(MapsUtils.drawPoyline(this, mMap));
         } else {
-            shiftStatus = true;
-            startStopShift.setText(getString(R.string.stop_shift));
-            startService(mIntent);
+            if (access) {
+                shiftStatus = true;
+                startStopShift.setText(getString(R.string.stop_shift));
+                startService(mIntent);
+            } else {
+                checkPermissionAndEnableCurrentLocation();
+            }
         }
-
     }
 
     private boolean shiftStatus = false;
     private Intent mIntent;
     private GoogleMap mMap;
+    private boolean access = true;
+
+    private static final int PERMISSIONS_REQUEST_LOCATION = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +81,39 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
+        checkPermissionAndEnableCurrentLocation();
 
         // Add a marker in Sydney and move the camera
         /*LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+    }
+
+    private void checkPermissionAndEnableCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            access = false;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    PERMISSIONS_REQUEST_LOCATION);
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_LOCATION: {
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    access = true;
+                    checkPermissionAndEnableCurrentLocation();
+                } else {
+                    access = false;
+                }
+            }
+        }
     }
 }
