@@ -27,4 +27,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.google.android.gms:play-services-maps:10.2.6'
     testCompile 'junit:junit:4.12'
+
+    compile "com.jakewharton:butterknife:$butterknife_version"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknife_version"
+
+    annotationProcessor "net.simonvt.schematic:schematic-compiler:$simonvt_version"
+    compile "net.simonvt.schematic:schematic:$simonvt_version"
 }

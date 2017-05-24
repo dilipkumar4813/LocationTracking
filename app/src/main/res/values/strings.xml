@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Location Tracking</string>
     <string name="title_activity_schedule">Map</string>
+
+    <string name="start_shift">Start shift</string>
+    <string name="stop_shift">Stop shift</string>
 </resources>

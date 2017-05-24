@@ -1,8 +1,10 @@
 package iamdilipkumar.com.locationtracking.ui;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -12,9 +14,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import iamdilipkumar.com.locationtracking.R;
+import iamdilipkumar.com.locationtracking.services.BackgroundTrackingService;
 
 public class ScheduleActivity extends FragmentActivity implements OnMapReadyCallback {
+
+    private boolean shiftStatus = false;
+    Intent mIntent;
+
+    @OnClick(R.id.btn_start_stop_shift)
+    void startOrStopShift(Button startStopShift) {
+        if (shiftStatus) {
+            shiftStatus = false;
+            startStopShift.setText(getString(R.string.start_shift));
+            stopService(mIntent);
+        } else {
+            shiftStatus = true;
+            startStopShift.setText(getString(R.string.stop_shift));
+            startService(mIntent);
+        }
+
+    }
 
     private GoogleMap mMap;
 
@@ -22,7 +44,10 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        mIntent = new Intent(this, BackgroundTrackingService.class);
+        ButterKnife.bind(this);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);

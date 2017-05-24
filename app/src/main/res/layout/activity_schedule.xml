@@ -11,11 +11,16 @@
         android:layout_height="match_parent" />
 
     <Button
+        android:id="@+id/btn_start_stop_shift"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
+        android:layout_marginBottom="@dimen/spacing_bottom_for_button"
+        android:layout_marginEnd="@dimen/normal_spacing"
+        android:layout_marginLeft="@dimen/normal_spacing"
+        android:layout_marginRight="@dimen/normal_spacing"
+        android:layout_marginStart="@dimen/normal_spacing"
         android:background="@color/colorAccent"
-        android:text="Start shift"
+        android:text="@string/start_shift"
         android:textColor="@android:color/white" />
 </RelativeLayout>

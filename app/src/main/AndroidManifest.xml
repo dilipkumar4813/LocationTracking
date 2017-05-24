@@ -27,7 +27,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".services.BackgroundTrackingService" android:process=":my_service" />
+        <service
+            android:name=".services.BackgroundTrackingService"
+            android:enabled="true" />
     </application>
 
 </manifest>
