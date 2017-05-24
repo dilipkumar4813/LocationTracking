@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,8 +28,6 @@ import iamdilipkumar.com.locationtracking.services.BackgroundTrackingService;
 import iamdilipkumar.com.locationtracking.ui.dialog.CustomDialog;
 
 public class ScheduleActivity extends FragmentActivity implements OnMapReadyCallback {
-
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private boolean shiftStatus = false;
     Intent mIntent;
@@ -63,10 +59,6 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
 
         mIntent = new Intent(this, BackgroundTrackingService.class);
         ButterKnife.bind(this);
-
-        if (!isGooglePlayServicesAvailable()) {
-            this.finish();
-        }
 
         if (isMyServiceRunning(BackgroundTrackingService.class)) {
             shiftStatus = true;
@@ -159,26 +151,5 @@ public class ScheduleActivity extends FragmentActivity implements OnMapReadyCall
             }
         }
         return false;
-    }
-
-    /**
-     * Method to check if Google play services are available on the device
-     * If not found then the error dialog is shown and the activity will be closed
-     *
-     * @return - boolean to indicate google play services availability
-     */
-    private boolean isGooglePlayServicesAvailable() {
-        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
-        int result = googleAPI.isGooglePlayServicesAvailable(this);
-        if (result != ConnectionResult.SUCCESS) {
-            if (googleAPI.isUserResolvableError(result)) {
-                googleAPI.getErrorDialog(this, result,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            }
-
-            return false;
-        }
-
-        return true;
     }
 }
